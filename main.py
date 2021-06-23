@@ -83,21 +83,21 @@ def check_buy_sell_signals(df,symbol,cost,trade_time):
     last_row_index = len(df.index) - 1
     previous_row_index = last_row_index - 1
 
-    if not df['in_uptrend'][previous_row_index] and df['in_uptrend'][last_row_index]:
-        print(symbol)
-        time.sleep(2)
-        futures.cancel_sell_order(symbol)
-        futures.buy(symbol,cost)
-        send_mail("LONG",f"""LONGED {symbol} time: {trade_time}""")
-        print("changed to uptrend, buy")
-
-    if df['in_uptrend'][previous_row_index] and not df['in_uptrend'][last_row_index]:
-        print(symbol)
-        time.sleep(2)
-        futures.cancel_buy_order(symbol)
-        futures.sell(symbol,cost)
-        send_mail("SHORT",f"""SHORTED {symbol} time: {trade_time}""")
-        print("changed to downtrend, sell")
+    # if not df['in_uptrend'][previous_row_index] and df['in_uptrend'][last_row_index]:
+    #     print(symbol)
+    #     time.sleep(2)
+    #     futures.cancel_sell_order(symbol)
+    #     futures.buy(symbol,cost)
+    #     send_mail("LONG",f"""LONGED {symbol} time: {trade_time}""")
+    #     print("changed to uptrend, buy")
+    #
+    # if df['in_uptrend'][previous_row_index] and not df['in_uptrend'][last_row_index]:
+    #     print(symbol)
+    #     time.sleep(2)
+    #     futures.cancel_buy_order(symbol)
+    #     futures.sell(symbol,cost)
+    #     send_mail("SHORT",f"""SHORTED {symbol} time: {trade_time}""")
+    #     print("changed to downtrend, sell")
 
 
 def run_bot():
