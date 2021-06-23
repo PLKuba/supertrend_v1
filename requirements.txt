@@ -1,0 +1,6 @@
+ccxt
+schedule
+pandas
+python-binance
+secure-smtplib
+emails
