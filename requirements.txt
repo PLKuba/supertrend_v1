@@ -4,3 +4,4 @@ pandas
 python-binance
 secure-smtplib
 emails
+secure-smtplib

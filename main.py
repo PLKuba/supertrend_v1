@@ -3,6 +3,7 @@ import schedule
 from binance.client import Client
 from time_test import binance_currencies, ccxt_currencies
 import futures_test as futures
+from sms import send_mail
 from time_test import currencies
 from datetime import datetime
 import time
@@ -20,7 +21,7 @@ warnings.filterwarnings('ignore')
 
 from datetime import datetime
 import time
-timeframe="1h"
+timeframe="1m"
 
 exchange = ccxt.binance({
     "apiKey": "m0NJtJo4u1uIv07yu7lFrcWBnVUDhqHiykLvWMe3V2PArQlsE6ja89Xm8K5ebEes",
@@ -86,15 +87,17 @@ def check_buy_sell_signals(df,symbol,cost):
         position = client.futures_position_information(symbol=symbol)
         if position[0]["positionAmt"]!=0:
             futures.cancel_sell_order(symbol)
-        futures.buy(symbol,cost)
+        order=futures.buy(symbol,cost)
+        send_mail("LONG",order)
         print("changed to uptrend, buy")
 
     if df['in_uptrend'][previous_row_index] and not df['in_uptrend'][last_row_index]:
         position = client.futures_position_information(symbol=symbol)
         if position[0]["positionAmt"]!=0:
             futures.cancel_buy_order(symbol)
+        order=futures.sell(symbol,cost)
+        send_mail("SHORT",order)
         print("changed to downtrend, sell")
-        futures.sell(symbol,cost)
 
 
 def run_bot():
