@@ -11,8 +11,8 @@ import time
 client = Client("m0NJtJo4u1uIv07yu7lFrcWBnVUDhqHiykLvWMe3V2PArQlsE6ja89Xm8K5ebEes","aK8eOMK1ykDqy7vw8LqYE9X1jFrULlN25kqUZEKAV0c68qoi7WIQAhsx8mUTrKkf")
 
 import pandas as pd
-
 pd.set_option('display.max_rows', None)
+
 
 import warnings
 
@@ -21,7 +21,7 @@ warnings.filterwarnings('ignore')
 
 from datetime import datetime
 import time
-timeframe="1m"
+timeframe="1h"
 
 exchange = ccxt.binance({
     "apiKey": "m0NJtJo4u1uIv07yu7lFrcWBnVUDhqHiykLvWMe3V2PArQlsE6ja89Xm8K5ebEes",
@@ -83,24 +83,23 @@ def check_buy_sell_signals(df,symbol,cost,trade_time):
     last_row_index = len(df.index) - 1
     previous_row_index = last_row_index - 1
 
-    # if not df['in_uptrend'][previous_row_index] and df['in_uptrend'][last_row_index]:
-    #     print(symbol)
-    #     time.sleep(2)
-    #     futures.cancel_sell_order(symbol)
-    #     futures.buy(symbol,cost)
-    #     send_mail("LONG",f"""LONGED {symbol} time: {trade_time}""")
-    #     print("changed to uptrend, buy")
-    #
-    # if df['in_uptrend'][previous_row_index] and not df['in_uptrend'][last_row_index]:
-    #     print(symbol)
-    #     time.sleep(2)
-    #     futures.cancel_buy_order(symbol)
-    #     futures.sell(symbol,cost)
-    #     send_mail("SHORT",f"""SHORTED {symbol} time: {trade_time}""")
-    #     print("changed to downtrend, sell")
+    if not df['in_uptrend'][previous_row_index] and df['in_uptrend'][last_row_index]:
+        print(symbol)
+        futures.cancel_sell_order(symbol)
+        futures.buy(symbol,cost)
+        send_mail("LONG",f"""LONGED {symbol} time: {trade_time}""")
+        print("changed to uptrend, buy")
+
+    if df['in_uptrend'][previous_row_index] and not df['in_uptrend'][last_row_index]:
+        print(symbol)
+        futures.cancel_buy_order(symbol)
+        futures.sell(symbol,cost)
+        send_mail("SHORT",f"""SHORTED {symbol} time: {trade_time}""")
+        print("changed to downtrend, sell")
 
 
 def run_bot():
+    print("waiting for the candle to close")
     global timeframe
     while True:
         now = datetime.now()
@@ -113,7 +112,8 @@ def run_bot():
         print("#########")
         print(current_time)
         print("#########\n")
-        bars = exchange.fetch_ohlcv(ccxt_currencies[i], timeframe=timeframe, limit=100)
+        print(ccxt_currencies[i])
+        bars = exchange.fetch_ohlcv(symbol=ccxt_currencies[i], timeframe=timeframe, limit=1000)
         df = pd.DataFrame(bars[:-1], columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
         df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
         supertrend_data = supertrend(df)
@@ -149,8 +149,7 @@ def interval(timeframe):
             return (interval)
 
 
-schedule.every(interval(timeframe)).seconds.do(run_bot)
-schedule.every(5).seconds.do(run_bot)
+schedule.every(20).seconds.do(run_bot)
 
 
 while True:
