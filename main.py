@@ -113,7 +113,7 @@ def run_bot():
         print(current_time)
         print("#########\n")
         print(ccxt_currencies[i])
-        bars = exchange.fetch_ohlcv(symbol=ccxt_currencies[i], timeframe=timeframe, limit=1000)
+        bars = exchange.fetch_ohlcv(symbol=ccxt_currencies[i], timeframe=timeframe, limit=100)
         df = pd.DataFrame(bars[:-1], columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
         df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
         supertrend_data = supertrend(df)
