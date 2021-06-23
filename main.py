@@ -76,7 +76,7 @@ def supertrend(df, period=7, atr_multiplier=3):
 in_position = False
 
 
-def check_buy_sell_signals(df,symbol,cost,time):
+def check_buy_sell_signals(df,symbol,cost,trade_time):
     global in_position
 
     print("checking for buy and sell signals")
@@ -84,19 +84,19 @@ def check_buy_sell_signals(df,symbol,cost,time):
     previous_row_index = last_row_index - 1
 
     if not df['in_uptrend'][previous_row_index] and df['in_uptrend'][last_row_index]:
-        position = client.futures_position_information(symbol=symbol)
-        if position[0]["positionAmt"]!=0:
-            futures.cancel_sell_order(symbol)
+        print(symbol)
+        time.sleep(2)
+        futures.cancel_sell_order(symbol)
         futures.buy(symbol,cost)
-        send_mail("LONG",f"""LONGED {symbol} time: {time}""")
+        send_mail("LONG",f"""LONGED {symbol} time: {trade_time}""")
         print("changed to uptrend, buy")
 
     if df['in_uptrend'][previous_row_index] and not df['in_uptrend'][last_row_index]:
-        position = client.futures_position_information(symbol=symbol)
-        if position[0]["positionAmt"]!=0:
-            futures.cancel_buy_order(symbol)
+        print(symbol)
+        time.sleep(2)
+        futures.cancel_buy_order(symbol)
         futures.sell(symbol,cost)
-        send_mail("SHORT",f"""SHORTED {symbol} time: {time}""")
+        send_mail("SHORT",f"""SHORTED {symbol} time: {trade_time}""")
         print("changed to downtrend, sell")
 
 
@@ -118,7 +118,7 @@ def run_bot():
         df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
         supertrend_data = supertrend(df)
         print(supertrend_data)
-        check_buy_sell_signals(supertrend_data,symbol=binance_currencies[i],cost=10,time=current_time)
+        check_buy_sell_signals(supertrend_data,symbol=binance_currencies[i],cost=10,trade_time=current_time)
 
 
 

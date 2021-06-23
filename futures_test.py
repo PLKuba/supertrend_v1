@@ -1,5 +1,5 @@
 from binance.client import Client
-import time,math
+import math
 
 client = Client("m0NJtJo4u1uIv07yu7lFrcWBnVUDhqHiykLvWMe3V2PArQlsE6ja89Xm8K5ebEes","aK8eOMK1ykDqy7vw8LqYE9X1jFrULlN25kqUZEKAV0c68qoi7WIQAhsx8mUTrKkf")
 
@@ -37,14 +37,22 @@ def buy(symbol,cost):
     order = client.futures_create_order(symbol=symbol, side='BUY', type='MARKET', quantity=calculate_precicion(symbol=symbol,value=cost,timeframe="1m",leverage=10))
 
 def cancel_buy_order(symbol):
-    position=client.futures_position_information(symbol="BNBUSDT")
-    client.futures_create_order(symbol=symbol, side='SELL', type='MARKET', quantity=float(position[0]["positionAmt"]))
+    position = client.futures_position_information(symbol=symbol)
+    position_size_float = float(position[0]["positionAmt"])
+    if position_size_float!=0.00:
+        position=client.futures_position_information(symbol=symbol)
+        client.futures_create_order(symbol=symbol, side='SELL', type='MARKET', quantity=float(position[0]["positionAmt"]))
+    else:
+        print("nothing to cancel")
 
 def cancel_sell_order(symbol):
-    position=client.futures_position_information(symbol=symbol)
-    client.futures_create_order(symbol=symbol, side='BUY', type='MARKET', quantity=float(position[0]["positionAmt"])*(-1))
+    position = client.futures_position_information(symbol=symbol)
+    position_size_float = float(position[0]["positionAmt"])
+    if position_size_float != 0.00:
+        position = client.futures_position_information(symbol=symbol)
+        client.futures_create_order(symbol=symbol, side='BUY', type='MARKET',quantity=float(position[0]["positionAmt"]))
+    else:
+        print("nothing to cancel")
 
 def sell(symbol,cost):
     order = client.futures_create_order(symbol=symbol, side='SELL', type='MARKET', quantity=calculate_precicion(symbol=symbol,value=cost,timeframe="1m",leverage=10))
-
-

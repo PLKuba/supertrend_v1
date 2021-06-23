@@ -17,7 +17,6 @@ def send_mail(subject,body):
 
     try:
         server.login(sender,password)
-        print("Logged in...")
         server.sendmail(sender, receiver, message)
         print("Email has been sent!")
 
