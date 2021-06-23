@@ -6,11 +6,7 @@ def send_mail(subject,body):
     password = "oqnltyqhugtacydj"
 
     # header
-    message = f"""From: Snoop Dogg{sender}
-    To: Nicholas Cage{receiver}
-    Subject: {subject}\n
-    {body}
-    """
+    message = f"""Trade alert"""
 
     server = smtplib.SMTP("smtp.gmail.com", 587)
     server.starttls()
